@@ -1,0 +1,146 @@
+(C) 2010 Ralf Laemmel
+
+We walk through the evolution of a simple interpreter. This exercise
+is meant to explore functional programming in the context of language
+interpreters. We start from a trivial language which can generate
+natural numbers. Step by step, we add some language constructs that
+lead us to deal with partiality of interpretation, type tests, a
+binding mechanism, and differents form of recursion.
+
+None of these evolution steps are particularly advanced. The
+contribution of this code distribution lies more in the pedagogical
+style in making simple, well-understood extensions, and reflecting on
+the functional programming issues that pop as well as the code-level
+reusability that is achievable.
+
+The interpreters are programmed in a naive denotational style, using
+more basic techniques. In particular, we do not use monads for
+modularization until somewhat late in the exercise. Also, we do not
+make any effort to add language constructs in a type-safe, modular way
+(c.f., the Expression Problem). Instead, we use CPP to incrementally
+extend the interpreter; we also subdivide the interpreters into chunks
+of code so that we can replace chunks (files) selectively along
+evolution.
+
+------------------------------------------------------------
+
+Code organization
+
+Each interpreter is subdivided into code units as follows:
+
+- Imports: any imports needed to use Haskell's library.
+- Syntax: the algebraic datatype for the abstract syntax.
+- Value: the designated domain for the types of results.
+- Domains: other semantics used by the interpreter.
+- Interpreter: the semantic function (the interpreter).
+- Algebra: composition functions for semantic meanings.
+- Library: reusable, auxiliary functions for the interpreter.
+- Locals: not so reusable auxiliary functions.
+- Test: any code needed for testing the interpreter.
+- Main: the main function for testing the interpreter.
+
+------------------------------------------------------------
+
+Running the stuff
+
+You can test all this stuff very easily if you have:
+- ghc(i) (tested with version 6.10.4)
+- gcc cpp (tested with version 4.2.1)
+- make (tested with GNU Make 3.81)
+Go to subdir "Haskell/src" and type in "make".
+
+CPP is used to glue together the interpreters from the code units.
+The preprocessing results are cached in subdir preprocessed.
+
+------------------------------------------------------------
+
+Description of the versions of the interpreter
+
+0-ConstAdd
+
+This is the familiar evaluator for Const/Add expressions. This option
+only serves as a reminder that we have already dealt with interpreters
+in our discussion of the expression problem.
+
+
+1-ZeroSucc
+
+Let's pick a trivial starting point for interpretation. This language
+has a constant operation, Zero, and the successor operation,
+Succ. This is the basis for Peano-like natural numbers. Semantically,
+we represent natural numbers through Haskell's Ints. Hence, this tiny
+interpreter allows us to build Haskell Ints from Peano's zero and
+succ. That's nothing short of impressive. :-)
+
+
+2-ZeroSuccPred
+
+So far, our interpreter was a total function (assuming non-bottom
+arguments). We add a predecessor construct to the abstract
+syntax. Since our (intended) semantic domain is natural numbers, our
+interpreter function gets partial in this manner. That is, we need to
+rule out that we compute the predecessor of zero. We need to rewrite
+existing equations and use "partial function application" all over
+the place.
+
+
+3-NB
+
+We add a few more primitives to the interpreter: operations for
+Booleans. In fact, we arrive at the NB language of Pierce's TAPL
+(except that we leave out False and True (because they can be
+expressed already (as you may want to show))). This step of evolution
+adds something new insofar that we start to consider different result
+types. This complicates the result type; we need to perform partial
+projections on results, if we require a certain type. (For instance,
+the successor operation is only applicable to natural numbers.) In
+principle, NB also brings up typing, but we do not get into issues of
+static semantics/typing here.
+
+
+4-Lambda
+
+We add the lambda calculus to NB. Adopting common terminology, our
+composed beast is best called an applicative lambda calculus. We are
+ready for functional programming now. (We are Turing complete, too,
+for what it matters.) For instance, we can define arithmetic
+operations. To this end, we leverage the CBV fixed-point operator
+which is representable as a lambda expression.
+
+
+5-Letrec
+
+We add a recursive let construct to the applicative lambda
+calculus. This is a minor extension in terms of interpreter
+design. That is, it is a straightforward data extension---we just need
+to cover an additional syntactical construct without leaving the
+ground of our current semantic model. Conceptually, this is an
+interesting extension though because we can now define proper nested,
+recursive bindings. Our Turing-complete language gets closer to a
+proper functional programming language. In fact, this is as much
+expressiveness as we want to subject to interpretation here. The two
+remaining versions of the interpreter rather vary style of its
+definition.
+
+
+6-Monads
+
+The signature of the interpreter function involves partiality (c.f.,
+Maybe Value) and environment passing (Env -> ...). The actual
+interpreter involves considerable plumbing to deal with partiality and
+environment passing. In fact, our explicit ad-hoc style makes it hard
+to focus on the core meaning of the interpreter's equations. We
+migrate to monadic style to raise the level of abstraction, and to
+make parts of the interpreter more oblivious to partiality and
+environment passing, where possible.
+
+
+7-Bananas
+
+Finally, we separate recursion of the interpreter from the actual
+algebra of meanings of constructs. In this manner, we clarify the
+intention of compositionality for such a denotational-style
+interpreter. Also, this step presents the generalization of folding
+that is established for lists, which however can also be used for
+domain-specific algebraic datatypes such as types of abstract
+syntaxes.
