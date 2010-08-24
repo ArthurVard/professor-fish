@@ -1,7 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-
 #include "Imports.hs"
 #include "Syntax.hs"
 #include "Domains.hs"
