@@ -9,20 +9,19 @@ test:
 	make 7-Bananas.test
 
 %.test:
-	make $*.preprocess
-	echo "main" | ghci -v0 -Wall -i../include preprocessed/$*.hs > log
+	make $*.cpp
+	echo "main" | ghci -v0 -Wall -i../include cache/$*.hs > log
 	diff log $*/baseline
 	rm -f log
 
 %.ghci: 
-	make $*.preprocess
-	ghci -Wall -i../include preprocessed/$*.hs
+	make $*.cpp
+	ghci -Wall -i../include cache/$*.hs
 
-%.preprocess:
-	mkdir -p preprocessed
-	cpp -P -I$* Template.hs preprocessed/$*.hs
+%.cpp:
+	cpp -P -I$* Template.hs cache/$*.hs
 
 clean:
 	rm -f log
-	rm -rf preprocessed
+	rm -rf cache/*
 
