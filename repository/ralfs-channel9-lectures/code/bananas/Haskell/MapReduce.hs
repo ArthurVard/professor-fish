@@ -15,7 +15,7 @@ Science of Computer Programming, 2008
 
 module MapReduce where
 
-import qualified MapReduce.Simplistic
+import qualified MapReduce.Indexed
 import qualified MapReduce.Monoidal
 import Data.Monoid.MapToMonoid (MapToMonoid)
 import qualified Data.Monoid.MapToMonoid as MapToMonoid
@@ -50,33 +50,33 @@ long_input =
 
 {- --------------------------------------------------------------------------- -}
 
--- Testing MapReduce.Simplistic
+-- Testing MapReduce.Indexed
 
-wordOccurrenceCount_Simplistic = MapReduce.Simplistic.mapReduce m r
+wordOccurrenceCount_Indexed = MapReduce.Indexed.mapReduce m r
  where
   m :: String -> String -> [(String,Int)]
   m = const (map (flip (,) 1) . words)
   r :: String -> [Int] -> Int
   r = const sum
 
-main_Simplistic =
+main_Indexed =
        print
-     $ wordOccurrenceCount_Simplistic
+     $ wordOccurrenceCount_Indexed
      $ short_input
 
 
 -- Testing the parallel simplistic option
 
-wordOccurrenceCount_Simplistic' = MapReduce.Simplistic.mapReduce' 1 (const 1) m r
+wordOccurrenceCount_Indexed' = MapReduce.Indexed.mapReduce' 1 (const 1) m r
  where
   m :: String -> String -> [(String,Int)]
   m = const (map (flip (,) 1) . words)
   r :: String -> [Int] -> Int
   r = const sum
 
-main_Simplistic' =
+main_Indexed' =
        print
-     $ wordOccurrenceCount_Simplistic'
+     $ wordOccurrenceCount_Indexed'
      $ long_input
 
 
@@ -115,12 +115,12 @@ main_Monoidal' =
 -- Running all tests
 
 main = do
-          putStrLn "Testing MapReduce.Simplistic (sequential)"
-          main_Simplistic
+          putStrLn "Testing MapReduce.Indexed (sequential)"
+          main_Indexed
           putStrLn ""
 
-          putStrLn "Testing MapReduce.Simplistic (parallel)"
-          main_Simplistic'
+          putStrLn "Testing MapReduce.Indexed (parallel)"
+          main_Indexed'
           putStrLn ""
 
           putStrLn "Testing MapReduce.Monoidal (sequential)"
