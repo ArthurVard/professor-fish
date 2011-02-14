@@ -6,14 +6,10 @@ Google's MapReduce programming model revisited
 
 (C) Ralf Laemmel, 2006--2010
 
-The simplistic abstraction for MapReduce computations.
-
-The primed version is actually not simplistic---it hints at parallelism.
-
 -}
 
 
-module MapReduce.Simplistic (mapReduce, mapReduce') where
+module MapReduce.Indexed (mapReduce, mapReduce') where
 
 import Data.List (transpose)
 import Data.Map (Map,empty,insertWith,mapWithKey,filterWithKey,toList,unionsWith)
